@@ -1,0 +1,3 @@
+::ng-deep .tabs .mat-tab-list .mat-tab-labels {
+    display: none;
+}

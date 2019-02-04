@@ -1,0 +1,160 @@
+<div class="container">
+  <div class="card">
+    <div class="card-body">
+      <h4 class ="card-title">   
+        <h1>
+          Event Page
+        </h1>
+      </h4>
+
+      <div class="alert alert-danger" *ngIf="isServerError">
+          <strong>Danger!!</strong> Problem occurred. Please contact the Admin.!
+      </div>
+
+      <br>
+
+      <form class="form-inline">
+          <div class="form-group">
+            <div class="input-group">
+              <label ><b>Select a Date:</b></label> <input class="form-control" placeholder="yyyy-mm-dd" name="dp" [(ngModel)]="dateSelected" ngbDatepicker #d="ngbDatepicker" (ngModelChange)="dateChanged($event)">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+              </div>
+            </div>
+          </div>
+      </form>
+
+      <div class="alert alert-danger" *ngIf="dateNotSelected">
+          Please select a date first!
+      </div>
+      <br>
+          
+    
+
+      <!------ Include the above in your HEAD tag ---------->
+
+      <section id="tabs" class="project-tab">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <nav>
+                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                            <a [ngClass]="{'nav-item':true, 'nav-link':true, 'active': isWeekTabTrue}" id="nav-week-tab" data-toggle="tab" [(ngModel)]="selectedTab" (click)="tabSelectedChanged($event)" href="#nav-week" role="tab" aria-controls="nav-week" aria-selected="true">Week</a>
+                            <a [ngClass]="{'nav-item':true, 'nav-link':true, 'active': isMonthTabTrue}" id="nav-month-tab" data-toggle="tab" [(ngModel)]="selectedTab" (click)="tabSelectedChanged($event)" href="#nav-month" role="tab" aria-controls="nav-month" aria-selected="false">Month</a>
+                            <a [ngClass]="{'nav-item':true, 'nav-link':true, 'active': isQuarterTabTrue}" id="nav-quarter-tab" data-toggle="tab" [(ngModel)]="selectedTab" (click)="tabSelectedChanged($event)" href="#nav-quarter" role="tab" aria-controls="nav-quarter" aria-selected="false">Quarter</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div [ngClass]="{'tab-pane':true, 'fade':true, 'show':isWeekTabTrue, 'active': isWeekTabTrue}" id="nav-week" role="tabpanel" aria-labelledby="nav-week-tab">
+                           <span *ngIf="isLoadingProcess"><i class="fa fa-refresh fa-spin" ></i>Loading... </span>
+                           <div *ngIf="noDataFound" class="alert alert-warning" role="alert">
+                              No Data Found for this period!!
+                           </div>
+                           <table class="table table-stripped">
+                                <tbody>
+                                  <tr>
+                                    
+                                    <th>Event Date</th>
+                                    <th>Event Type</th>
+                                    <th>Event Summary</th>
+                                    <th>Event Size</th>
+                                    <th>Event Details </th>
+                                  </tr>
+                                  <tr *ngFor="let event of eventDisplay">
+                                    <!--<td>{{event.id}}</td>-->
+                                    <td>{{event.eventDate | slice:0:10 }}</td>
+                                    <td>{{event.eventType}}</td>
+                                    <td>{{event.eventSummary}}</td>
+                                    <td>{{event.eventSize}}</td>
+                                    <td><button type="button" style="cursor: pointer;" (click)="getDetails(event.id, event.eventDate, event.eventType)" 
+                                      data-toggle="modal" data-target="#eventDetail"> Details!</button></td>
+                                  <tr>
+                                </tbody>
+                              </table>
+                              <hr>
+                              <ul class="nav nav-pills">
+                                <li class="nav-item" *ngFor="let p of pages; let i=index;">
+                                  <a class="nav-link" href="" (click)="setPage(i, $event)"
+                                  [ngClass]="{'active': i==page}" >{{i}}</a>
+                                </li>
+                              </ul>
+                        </div>
+                        <div [ngClass]="{'tab-pane':true, 'fade':true, 'show':isMonthTabTrue, 'active': isMonthTabTrue}" id="nav-month" role="tabpanel" aria-labelledby="nav-month-tab">
+                           <span *ngIf="isLoadingProcess"><i class="fa fa-refresh fa-spin" ></i>Loading... </span>
+                           <div *ngIf="noDataFound" class="alert alert-warning" role="alert" >
+                              No Data Found for this period!!
+                           </div>
+                           <table class="table table-stripped">
+                                <tbody>
+                                  <tr>
+                                    
+                                    <th>Event Date</th>
+                                    <th>Event Type</th>
+                                    <th>Event Summary</th>
+                                    <th>Event Size</th>
+                                    <th>Event Details </th>
+                                  </tr>
+                                  <tr *ngFor="let event of eventDisplay">
+                                    <!--<td>{{event.id}}</td>-->
+                                    <td>{{event.eventDate | slice:0:10 }}</td>
+                                    <td>{{event.eventType}}</td>
+                                    <td>{{event.eventSummary}}</td>
+                                    <td>{{event.eventSize}}</td>
+                                    <td> <button type="button" style="cursor: pointer;" (click)="getDetails(event.id, event.eventDate, event.eventType)" 
+                                      data-toggle="modal" data-target="#eventDetail"> Details!</button></td>
+                                  <tr>
+                                </tbody>
+                              </table>
+                              <hr>
+                              <ul class="nav nav-pills">
+                                <li class="nav-item" *ngFor="let p of pages; let i=index;">
+                                  <a class="nav-link" href="" (click)="setPage(i, $event)"
+                                  [ngClass]="{'active': i==page}" >{{i}}</a>
+                                </li>
+                              </ul>
+                        </div>
+                        <div [ngClass]="{'tab-pane':true, 'fade':true, 'show':isQuarterTabTrue, 'active': isQuarterTabTrue}" id="nav-quarter" role="tabpanel" aria-labelledby="nav-quarter-tab">
+                            <span *ngIf="isLoadingProcess"><i class="fa fa-refresh fa-spin" ></i>Loading... </span>
+                            <div *ngIf="noDataFound" class="alert alert-warning" role="alert">
+                                No Data Found for this period!!
+                             </div>
+                            <table class="table table-stripped">
+                                <tbody>
+                                  <tr>
+                                    
+                                    <th>Event Date</th>
+                                    <th>Event Type</th>
+                                    <th>Event Summary</th>
+                                    <th>Event Size</th>
+                                    <th>Event Details </th>
+                                  </tr>
+                                  <tr *ngFor="let event of eventDisplay">
+                                    <!--<td>{{event.id}}</td>-->
+                                    <td>{{event.eventDate | slice:0:10}}</td>
+                                    <td>{{event.eventType}}</td>
+                                    <td>{{event.eventSummary}}</td>
+                                    <td>{{event.eventSize}}</td>
+                                    <td> 
+                                      <button type="button" style="cursor: pointer;" (click)="getDetails(event.id, event.eventDate, event.eventType)"> Details!</button></td>
+                                    
+                                  <tr>
+                                </tbody>
+                              </table>
+                              <hr>
+                              <ul class="nav nav-pills">
+                                <li class="nav-item" *ngFor="let p of pages; let i=index;">
+                                  <a class="nav-link" href="" (click)="setPage(i, $event)"
+                                  [ngClass]="{'active': i==page}" >{{i}}</a>
+                                </li>
+                              </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section>
+
+    </div>
+  </div> <!-- Close Card Div -->
+
+</div><!-- /container-->
